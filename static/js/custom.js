@@ -5,6 +5,8 @@ $(document).ready(function() {
   var chatBtn = $('#chatBtn');
   var chatInput = $('#chatInput');
   var chatWindow = $('#chatWindow');
+
+  showBtn.hide();
   
   // 监听展示按钮
   showBtn.click(function(){
@@ -69,7 +71,7 @@ $(document).ready(function() {
       $(".answer .others .center").css("display", "flex");
     }
     
-    lastResponseElement.append(escapedMessage);
+    lastResponseElement.append(message);
     chatWindow.scrollTop(chatWindow.prop('scrollHeight'));
   }
 
@@ -103,13 +105,11 @@ $(document).ready(function() {
     }
 
     addRequestMessage(message);
-    // 将用户消息保存到数组
-    messages.push({"role": "user", "content": message})
     // 收到回复前让按钮不可点击
     chatBtn.attr('disabled',true)
 
-    if(messages.length>40){
-      addFailMessage("此次对话长度过长，请点击下方删除按钮清除对话内容！");
+    if(message.length>40){
+      addFailMessage("此次对话长度过长，请清除对话内容！");
       // 重新绑定键盘事件
       chatInput.on("keydown",handleEnter);
       chatBtn.attr('disabled',false) // 让按钮可点击
@@ -117,8 +117,7 @@ $(document).ready(function() {
     }
     
     // 信息处理
-    data.prompts = messages.slice();  // 拷贝一份全局messages赋值给data.prompts,然后对data.prompts处理
-    data.prompts = JSON.stringify(data.prompts);
+    data.prompts = message;
 
     let res;
     // 发送信息到后台
@@ -126,12 +125,12 @@ $(document).ready(function() {
       url: '/aiApi',
       method: 'POST',
       data: data,
-      success:function(result){
+      success:function(res){
         // 判断是否是回复正确信息
-        if(result.success){
-          addResponseMessage(res);
+        if(res.success){
+          addResponseMessage(res.message);
         }else{
-          addResponseMessage(res);
+          addResponseMessage(res.message);
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
