@@ -6,7 +6,7 @@ $(document).ready(function() {
   var chatInput = $('#chatInput');
   var chatWindow = $('#chatWindow');
 
-  showBtn.hide();
+  // showBtn.hide();
   
   // 监听展示按钮
   showBtn.click(function(){
